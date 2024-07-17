@@ -16,6 +16,10 @@
 
 package com.sk89q.worldedit.extension.factory;
 
+import static com.sk89q.worldedit.blocks.BaseBlock.MAX_DATA;
+
+import net.minecraft.block.Block;
+
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.NotABlockException;
@@ -37,6 +41,8 @@ import com.sk89q.worldedit.extension.input.ParserContext;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.world.World;
+
+import gregtech.api.items.GT_Generic_Block;
 
 /**
  * Parses block input strings.
@@ -179,8 +185,8 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
                 if (typeAndData.length > 1 && !typeAndData[1].isEmpty()) {
                     data = Integer.parseInt(typeAndData[1]);
                 }
-
-                if (data > 15) {
+                Block b = Block.getBlockById(blockId);
+                if (b == null || (!(b instanceof GT_Generic_Block) && data > 15) || data > MAX_DATA) {
                     throw new NoMatchException("Invalid data value '" + typeAndData[1] + "'");
                 }
 

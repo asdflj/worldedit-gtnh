@@ -79,6 +79,13 @@ import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.WorldData;
 
+import gregtech.api.GregTech_API;
+import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
+import gregtech.common.blocks.GT_Block_Machines;
+import gregtech.common.blocks.GT_Block_Ores;
+import gregtech.common.blocks.GT_Block_Ores_Abstract;
+import gregtech.common.blocks.GT_TileEntity_Ores;
+
 /**
  * An adapter to Minecraft worlds for WorldEdit.
  */
@@ -169,11 +176,29 @@ public class ForgeWorld extends AbstractWorld {
         if (notifyAndLight) {
             previousId = Block.getIdFromBlock(chunk.getBlock(x & 15, y, z & 15));
         }
-
-        boolean successful = chunk.func_150807_a(x & 15, y, z & 15, Block.getBlockById(block.getId()), block.getData());
+        Block b = Block.getBlockById(block.getId());
+        int meta;
+        if (b instanceof GT_Block_Machines) {
+            meta = GregTech_API.METATILEENTITIES[block.getData()].getTileEntityBaseType();
+        } else if (b instanceof GT_Block_Ores) {
+            meta = GT_TileEntity_Ores.getHarvestData(
+                (short) block.getData(),
+                ((GT_Block_Ores_Abstract) b).getBaseBlockHarvestLevel(block.getData() % 16000 / 1000));
+        } else {
+            meta = block.getData();
+        }
+        boolean successful = chunk.func_150807_a(x & 15, y, z & 15, Block.getBlockById(block.getId()), meta);
 
         // Create the TileEntity
         if (successful) {
+            TileEntity tile = world.getTileEntity(x, y, z);
+
+            if (tile instanceof GT_TileEntity_Ores gtt) {
+                gtt.mMetaData = (short) block.getData();
+                gtt.mNatural = false;
+            } else if (tile instanceof IGregTechTileEntity itt) {
+                itt.setInitialValuesAsNBT(null, (short) block.getData());
+            }
             CompoundTag tag = block.getNbtData();
             if (tag != null) {
                 NBTTagCompound nativeTag = NBTConverter.toNative(tag);
