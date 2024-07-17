@@ -81,6 +81,7 @@ import com.sk89q.worldedit.world.registry.WorldData;
 
 import gregtech.api.GregTech_API;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
+import gregtech.api.metatileentity.CoverableTileEntity;
 import gregtech.common.blocks.GT_Block_Machines;
 import gregtech.common.blocks.GT_Block_Ores;
 import gregtech.common.blocks.GT_Block_Ores_Abstract;
@@ -451,6 +452,16 @@ public class ForgeWorld extends AbstractWorld {
         TileEntity tile = getWorld().getTileEntity(position.getBlockX(), position.getBlockY(), position.getBlockZ());
 
         if (tile != null) {
+            if (tile instanceof CoverableTileEntity cte) {
+                try {
+                    Field field = CoverableTileEntity.class.getDeclaredField("mID");
+                    field.setAccessible(true);
+                    data = field.getShort(cte);
+                } catch (Exception ignored) {}
+
+            } else if (tile instanceof GT_TileEntity_Ores teo) {
+                data = teo.mMetaData;
+            }
             return new TileEntityBaseBlock(id, data, tile);
         } else {
             return new BaseBlock(id, data);
