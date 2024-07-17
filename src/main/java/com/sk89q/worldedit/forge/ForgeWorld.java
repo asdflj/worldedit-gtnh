@@ -189,16 +189,18 @@ public class ForgeWorld extends AbstractWorld {
         }
         boolean successful = chunk.func_150807_a(x & 15, y, z & 15, Block.getBlockById(block.getId()), meta);
 
-        // Create the TileEntity
-        if (successful) {
-            TileEntity tile = world.getTileEntity(x, y, z);
-
+        TileEntity tile = world.getTileEntity(x, y, z);
+        if (tile != null) {
             if (tile instanceof GT_TileEntity_Ores gtt) {
                 gtt.mMetaData = (short) block.getData();
                 gtt.mNatural = false;
-            } else if (tile instanceof IGregTechTileEntity itt) {
-                itt.setInitialValuesAsNBT(null, (short) block.getData());
+            } else if (tile instanceof IGregTechTileEntity gtt) {
+                gtt.setInitialValuesAsNBT(null, (short) block.getData());
             }
+        }
+
+        // Create the TileEntity
+        if (successful || tile instanceof IGregTechTileEntity) {
             CompoundTag tag = block.getNbtData();
             if (tag != null) {
                 NBTTagCompound nativeTag = NBTConverter.toNative(tag);
