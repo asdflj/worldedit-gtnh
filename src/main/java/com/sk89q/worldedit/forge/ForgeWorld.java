@@ -79,13 +79,13 @@ import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.biome.BaseBiome;
 import com.sk89q.worldedit.world.registry.WorldData;
 
-import gregtech.api.GregTech_API;
+import gregtech.api.GregTechAPI;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.CoverableTileEntity;
-import gregtech.common.blocks.GT_Block_Machines;
-import gregtech.common.blocks.GT_Block_Ores;
-import gregtech.common.blocks.GT_Block_Ores_Abstract;
-import gregtech.common.blocks.GT_TileEntity_Ores;
+import gregtech.common.blocks.BlockMachines;
+import gregtech.common.blocks.BlockOres;
+import gregtech.common.blocks.BlockOresAbstract;
+import gregtech.common.blocks.TileEntityOres;
 
 /**
  * An adapter to Minecraft worlds for WorldEdit.
@@ -179,12 +179,12 @@ public class ForgeWorld extends AbstractWorld {
         }
         Block b = Block.getBlockById(block.getId());
         int meta;
-        if (b instanceof GT_Block_Machines) {
-            meta = GregTech_API.METATILEENTITIES[block.getData()].getTileEntityBaseType();
-        } else if (b instanceof GT_Block_Ores) {
-            meta = GT_TileEntity_Ores.getHarvestData(
+        if (b instanceof BlockMachines) {
+            meta = GregTechAPI.METATILEENTITIES[block.getData()].getTileEntityBaseType();
+        } else if (b instanceof BlockOres) {
+            meta = TileEntityOres.getHarvestData(
                 (short) block.getData(),
-                ((GT_Block_Ores_Abstract) b).getBaseBlockHarvestLevel(block.getData() % 16000 / 1000));
+                ((BlockOresAbstract) b).getBaseBlockHarvestLevel(block.getData() % 16000 / 1000));
         } else {
             meta = block.getData();
         }
@@ -192,7 +192,7 @@ public class ForgeWorld extends AbstractWorld {
 
         TileEntity tile = world.getTileEntity(x, y, z);
         if (tile != null) {
-            if (tile instanceof GT_TileEntity_Ores gtt) {
+            if (tile instanceof TileEntityOres gtt) {
                 gtt.mMetaData = (short) block.getData();
                 gtt.mNatural = false;
             } else if (tile instanceof IGregTechTileEntity gtt) {
@@ -459,7 +459,7 @@ public class ForgeWorld extends AbstractWorld {
                     data = field.getShort(cte);
                 } catch (Exception ignored) {}
 
-            } else if (tile instanceof GT_TileEntity_Ores teo) {
+            } else if (tile instanceof TileEntityOres teo) {
                 data = teo.mMetaData;
             }
             return new TileEntityBaseBlock(id, data, tile);

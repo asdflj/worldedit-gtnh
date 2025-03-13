@@ -42,7 +42,7 @@ import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.internal.registry.InputParser;
 import com.sk89q.worldedit.world.World;
 
-import gregtech.api.items.GT_Generic_Block;
+import gregtech.api.items.GTGenericBlock;
 
 /**
  * Parses block input strings.
@@ -186,7 +186,7 @@ class DefaultBlockParser extends InputParser<BaseBlock> {
                     data = Integer.parseInt(typeAndData[1]);
                 }
                 Block b = Block.getBlockById(blockId);
-                if (b == null || (!(b instanceof GT_Generic_Block) && data > 15) || data > MAX_DATA) {
+                if (b == null || (!(b instanceof GTGenericBlock) && data > 15) || data > MAX_DATA) {
                     throw new NoMatchException("Invalid data value '" + typeAndData[1] + "'");
                 }
 
